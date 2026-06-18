@@ -1,5 +1,5 @@
 using WowVmMonitor.Core.Configuration;
-using WowVmMonitor.Infrastructure.Shares;
+using WowVmMonitor.App.Shares;
 
 namespace WowVmMonitor.App;
 

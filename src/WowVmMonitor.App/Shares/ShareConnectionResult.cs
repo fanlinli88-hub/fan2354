@@ -1,4 +1,4 @@
-namespace WowVmMonitor.Infrastructure.Shares;
+namespace WowVmMonitor.App.Shares;
 
 public sealed record ShareConnectionResult(
     string MachineId,

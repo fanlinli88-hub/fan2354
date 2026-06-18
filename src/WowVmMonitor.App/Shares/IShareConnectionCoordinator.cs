@@ -1,6 +1,6 @@
 using WowVmMonitor.Core.Configuration;
 
-namespace WowVmMonitor.Infrastructure.Shares;
+namespace WowVmMonitor.App.Shares;
 
 public interface IShareConnectionCoordinator
 {

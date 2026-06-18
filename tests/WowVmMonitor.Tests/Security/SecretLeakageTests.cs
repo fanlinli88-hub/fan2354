@@ -1,7 +1,7 @@
 using System.Text.Json;
+using WowVmMonitor.App.Shares;
 using WowVmMonitor.Core.Configuration;
 using WowVmMonitor.Infrastructure.Credentials;
-using WowVmMonitor.Infrastructure.Shares;
 
 namespace WowVmMonitor.Tests.Security;
 
