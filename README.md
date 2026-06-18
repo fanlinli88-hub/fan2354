@@ -28,3 +28,14 @@ The existing PowerShell monitor remains separate and unchanged.
 - Stateful two-observation alert and recovery transitions.
 - Shallow latest-log discovery across character and date directories.
 - Cached log selection with explicit refresh and missing-file fallback.
+- A cancellable single-VM monitor that combines log discovery with state transitions.
+- An asynchronous shared-log source that converts share failures into explicit results.
+- Concurrent orchestration for up to eight independently cached and timed virtual machines.
+- A 10-second default per-machine check timeout with isolated start and stop control.
+
+## Runtime limits
+
+- Default check interval: 60 seconds per enabled machine.
+- Default per-check timeout: 10 seconds per machine.
+- Maximum concurrent machines: 8.
+- Monitoring reads directory metadata only; log contents are never read.
