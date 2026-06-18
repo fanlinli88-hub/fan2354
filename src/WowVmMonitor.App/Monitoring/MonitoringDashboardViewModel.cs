@@ -73,7 +73,7 @@ public sealed class MonitoringDashboardViewModel : ObservableObject, IAsyncDispo
     {
         try
         {
-            await _controller.StartAsync(cancellationToken).ConfigureAwait(false);
+            await _controller.StartAsync(cancellationToken);
         }
         finally
         {
@@ -85,7 +85,7 @@ public sealed class MonitoringDashboardViewModel : ObservableObject, IAsyncDispo
     {
         try
         {
-            await _controller.StopAsync(cancellationToken).ConfigureAwait(false);
+            await _controller.StopAsync(cancellationToken);
         }
         finally
         {

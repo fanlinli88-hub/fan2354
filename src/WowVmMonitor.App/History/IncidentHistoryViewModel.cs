@@ -1,18 +1,22 @@
 using System.Collections.ObjectModel;
 using WowVmMonitor.App.Mvvm;
+using WowVmMonitor.App.Ui;
 
 namespace WowVmMonitor.App.History;
 
 public sealed class IncidentHistoryViewModel : ObservableObject
 {
     private readonly IIncidentHistoryReader _reader;
+    private readonly IUiDispatcher _dispatcher;
     private string? _machineFilter;
     private string? _eventTypeFilter;
 
-    public IncidentHistoryViewModel(IIncidentHistoryReader reader)
+    public IncidentHistoryViewModel(IIncidentHistoryReader reader, IUiDispatcher dispatcher)
     {
         ArgumentNullException.ThrowIfNull(reader);
+        ArgumentNullException.ThrowIfNull(dispatcher);
         _reader = reader;
+        _dispatcher = dispatcher;
         RefreshCommand = new AsyncCommand(RefreshAsync);
     }
 
@@ -27,10 +31,13 @@ public sealed class IncidentHistoryViewModel : ObservableObject
         var records = await _reader
             .QueryAsync(new IncidentQuery(MachineFilter, EventTypeFilter), cancellationToken)
             .ConfigureAwait(false);
-        Records.Clear();
-        foreach (var record in records)
+        await _dispatcher.InvokeAsync(() =>
         {
-            Records.Add(record);
-        }
+            Records.Clear();
+            foreach (var record in records)
+            {
+                Records.Add(record);
+            }
+        }, cancellationToken).ConfigureAwait(false);
     }
 }

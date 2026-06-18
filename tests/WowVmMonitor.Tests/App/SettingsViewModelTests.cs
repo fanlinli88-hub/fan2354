@@ -36,12 +36,41 @@ public sealed class SettingsViewModelTests
         Assert.Equal(0, service.LastCredentialUpdateCount);
     }
 
-    private sealed class RecordingSettingsService(bool failSave) : ISettingsService
+    [Fact]
+    public async Task AddMachineStopsAtEight()
+    {
+        var viewModel = await SettingsViewModel.CreateAsync(
+            new RecordingSettingsService(failSave: false), CancellationToken.None);
+
+        while (viewModel.AddMachineCommand.CanExecute(null))
+        {
+            viewModel.AddMachineCommand.Execute(null);
+        }
+
+        Assert.Equal(8, viewModel.Machines.Count);
+        Assert.False(viewModel.AddMachineCommand.CanExecute(null));
+        Assert.Equal(8, viewModel.Machines.Select(machine => machine.Id).Distinct().Count());
+    }
+
+    [Fact]
+    public async Task SuccessfulSaveClearsRequiredConfirmation()
+    {
+        var viewModel = await SettingsViewModel.CreateAsync(
+            new RecordingSettingsService(failSave: false, requiresConfirmation: true),
+            CancellationToken.None);
+
+        viewModel.SaveCommand.Execute(null);
+        await viewModel.SaveCommand.ExecutionTask;
+
+        Assert.False(viewModel.RequiresUserConfirmation);
+    }
+
+    private sealed class RecordingSettingsService(bool failSave, bool requiresConfirmation = false) : ISettingsService
     {
         public int LastCredentialUpdateCount { get; private set; }
 
         public Task<SettingsLoadResult> LoadAsync(CancellationToken cancellationToken) =>
-            Task.FromResult(new SettingsLoadResult(CreateConfiguration(), false, []));
+            Task.FromResult(new SettingsLoadResult(CreateConfiguration(), requiresConfirmation, []));
 
         public Task<SettingsSaveResult> SaveAsync(
             SettingsSaveRequest request,

@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using WowVmMonitor.App.Mvvm;
 using WowVmMonitor.Core.Configuration;
+using WowVmMonitor.Core.Monitoring;
 
 namespace WowVmMonitor.App.Settings;
 
@@ -12,6 +13,7 @@ public sealed class SettingsViewModel : ObservableObject
     private int _warningAfterSeconds;
     private int _alertAfterSeconds;
     private string? _statusMessage;
+    private bool _requiresUserConfirmation;
 
     private SettingsViewModel(ISettingsService service, SettingsLoadResult loadResult)
     {
@@ -26,13 +28,21 @@ public sealed class SettingsViewModel : ObservableObject
             Machines.Add(new MachineSettingsDraft(machine));
         }
 
-        RequiresUserConfirmation = loadResult.RequiresUserConfirmation;
+        _requiresUserConfirmation = loadResult.RequiresUserConfirmation;
         SaveCommand = new AsyncCommand(SaveAsync);
+        AddMachineCommand = new RelayCommand(_ => AddMachine(), _ => Machines.Count < MultiVmMonitor.MaximumMachineCount);
+        RemoveMachineCommand = new RelayCommand(RemoveMachine, parameter => parameter is MachineSettingsDraft);
     }
 
     public ObservableCollection<MachineSettingsDraft> Machines { get; } = [];
     public AsyncCommand SaveCommand { get; }
-    public bool RequiresUserConfirmation { get; private set; }
+    public RelayCommand AddMachineCommand { get; }
+    public RelayCommand RemoveMachineCommand { get; }
+    public bool RequiresUserConfirmation
+    {
+        get => _requiresUserConfirmation;
+        private set => SetProperty(ref _requiresUserConfirmation, value);
+    }
     public int CheckIntervalSeconds { get => _checkIntervalSeconds; set => SetProperty(ref _checkIntervalSeconds, value); }
     public int CheckTimeoutSeconds { get => _checkTimeoutSeconds; set => SetProperty(ref _checkTimeoutSeconds, value); }
     public int WarningAfterSeconds { get => _warningAfterSeconds; set => SetProperty(ref _warningAfterSeconds, value); }
@@ -44,7 +54,7 @@ public sealed class SettingsViewModel : ObservableObject
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(service);
-        var loadResult = await service.LoadAsync(cancellationToken).ConfigureAwait(false);
+        var loadResult = await service.LoadAsync(cancellationToken);
         return new SettingsViewModel(service, loadResult);
     }
 
@@ -80,7 +90,7 @@ public sealed class SettingsViewModel : ObservableObject
         using var request = new SettingsSaveRequest(configuration, updates);
         try
         {
-            var result = await _service.SaveAsync(request, cancellationToken).ConfigureAwait(false);
+            var result = await _service.SaveAsync(request, cancellationToken);
             StatusMessage = result.Succeeded ? "Settings saved." : "Settings could not be saved.";
             RequiresUserConfirmation = !result.Succeeded;
         }
@@ -95,6 +105,27 @@ public sealed class SettingsViewModel : ObservableObject
         foreach (var machine in Machines)
         {
             machine.ClearReplacementPassword();
+        }
+    }
+
+    private void AddMachine()
+    {
+        var id = Enumerable.Range(1, MultiVmMonitor.MaximumMachineCount)
+            .Select(number => $"machine-{number}")
+            .First(candidate => Machines.All(machine => !machine.Id.Equals(candidate, StringComparison.OrdinalIgnoreCase)));
+        Machines.Add(new MachineSettingsDraft(new MachineConfiguration(
+            id, $"Machine {Machines.Count + 1}", @"\\server\share", false,
+            MachineConfiguration.CredentialTargetFor(id))));
+        AddMachineCommand.RaiseCanExecuteChanged();
+    }
+
+    private void RemoveMachine(object? parameter)
+    {
+        if (parameter is MachineSettingsDraft machine)
+        {
+            machine.ClearReplacementPassword();
+            Machines.Remove(machine);
+            AddMachineCommand.RaiseCanExecuteChanged();
         }
     }
 }

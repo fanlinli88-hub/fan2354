@@ -1,0 +1,25 @@
+<UserControl x:Class="WowVmMonitor.Desktop.Views.IncidentHistoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <TextBox Width="140" Text="{Binding MachineFilter}" ToolTip="Machine ID" Margin="0,0,8,0" />
+            <TextBox Width="140" Text="{Binding EventTypeFilter}" ToolTip="Event type" Margin="0,0,8,0" />
+            <Button Content="Refresh" Command="{Binding RefreshCommand}" MinWidth="90" />
+        </StackPanel>
+        <TextBlock Grid.Row="1" Text="{Binding Notice}" Margin="0,8" Foreground="DarkGoldenrod" />
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Records}" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Time" Binding="{Binding Timestamp, StringFormat={}{0:G}}" Width="160" />
+                <DataGridTextColumn Header="Machine" Binding="{Binding MachineId}" Width="120" />
+                <DataGridTextColumn Header="Event" Binding="{Binding EventType}" Width="120" />
+                <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

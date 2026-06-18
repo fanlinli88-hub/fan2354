@@ -72,7 +72,7 @@ public sealed class AsyncCommand : ObservableObject, ICommand, IDisposable
         LastError = null;
         try
         {
-            await _execute(_cancellation.Token).ConfigureAwait(false);
+            await _execute(_cancellation.Token);
         }
         catch (OperationCanceledException) when (_cancellation.IsCancellationRequested)
         {
