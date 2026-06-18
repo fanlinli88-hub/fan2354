@@ -39,3 +39,12 @@ The existing PowerShell monitor remains separate and unchanged.
 - Default per-check timeout: 10 seconds per machine.
 - Maximum concurrent machines: 8.
 - Monitoring reads directory metadata only; log contents are never read.
+
+## Configuration and credentials
+
+- Configuration: `%LocalAppData%\WowVmMonitor\config.json`
+- Backup: `%LocalAppData%\WowVmMonitor\config.json.bak`
+- Credentials: Windows Credential Manager targets named `WowVmMonitor/share/<machine-id>`
+- Usernames and passwords are never stored in JSON or emitted in diagnostics.
+- A valid backup is restored automatically. If both files are invalid, monitoring remains disabled until the generated default is reviewed.
+- Starting WowVmMonitor after a Windows restart reloads saved credentials and reconnects enabled shares; the app does not register itself for automatic startup.
