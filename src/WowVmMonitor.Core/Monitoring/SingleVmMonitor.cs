@@ -49,6 +49,10 @@ public sealed class SingleVmMonitor
         }
     }
 
+    internal ILogActivitySource ActivitySource => _source;
+
+    internal LogMonitorStateMachine StateMachine => _stateMachine;
+
     public async ValueTask<SingleVmMonitorResult> CheckAsync(
         DateTimeOffset currentTime,
         CancellationToken cancellationToken = default)
@@ -71,6 +75,20 @@ public sealed class SingleVmMonitor
                 null,
                 _stateMachine.IsAlerting,
                 $"Log activity check timed out after {_checkTimeout.TotalSeconds:N0} seconds.");
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            return new SingleVmMonitorResult(
+                VmMonitorStatus.Error,
+                MonitorTransition.None,
+                null,
+                null,
+                _stateMachine.IsAlerting,
+                exception.Message);
         }
 
         if (readResult.Status == LogActivityReadStatus.ShareUnavailable)

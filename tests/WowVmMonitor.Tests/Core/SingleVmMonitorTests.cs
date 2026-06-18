@@ -125,6 +125,19 @@ public sealed class SingleVmMonitorTests
     }
 
     [Fact]
+    public async Task UnexpectedSourceFailureReturnsErrorWithoutChangingAlertState()
+    {
+        var source = new ThrowingSource(new InvalidOperationException("source failed"));
+        var monitor = CreateMonitor(source);
+
+        var result = await monitor.CheckAsync(Now);
+
+        Assert.Equal(VmMonitorStatus.Error, result.Status);
+        Assert.Equal("source failed", result.ErrorMessage);
+        Assert.False(result.IsAlerting);
+    }
+
+    [Fact]
     [Trait("Category", "Soak")]
     public async Task RepeatedChecksDoNotRetainUnboundedMemory()
     {
@@ -179,6 +192,12 @@ public sealed class SingleVmMonitorTests
             new(_completion.Task);
 
         public void Release() => _completion.TrySetResult(LogActivityReadResult.NoLog());
+    }
+
+    private sealed class ThrowingSource(Exception exception) : ILogActivitySource
+    {
+        public ValueTask<LogActivityReadResult> ReadLatestAsync(CancellationToken cancellationToken) =>
+            ValueTask.FromException<LogActivityReadResult>(exception);
     }
 
     private sealed class StubLogActivitySource(params LogActivityReadResult[] results) : ILogActivitySource

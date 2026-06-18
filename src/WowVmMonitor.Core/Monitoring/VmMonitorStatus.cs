@@ -7,5 +7,6 @@ public enum VmMonitorStatus
     Alert,
     Recovery,
     ShareUnavailable,
-    NoLog
+    NoLog,
+    Error
 }
