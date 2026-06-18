@@ -1,6 +1,6 @@
 namespace WowVmMonitor.Infrastructure.Credentials;
 
-public sealed class WindowsCredentialStore
+public sealed class WindowsCredentialStore : IShareCredentialStore
 {
     public const string DefaultTargetPrefix = "WowVmMonitor/share/";
 
