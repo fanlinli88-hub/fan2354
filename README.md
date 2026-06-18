@@ -21,3 +21,10 @@ The certificate private key stays in the current user's Windows certificate
 store and is not committed to Git.
 
 The existing PowerShell monitor remains separate and unchanged.
+
+## Implemented modules
+
+- Core log-age classification with 5-minute warning and 10-minute alert thresholds.
+- Stateful two-observation alert and recovery transitions.
+- Shallow latest-log discovery across character and date directories.
+- Cached log selection with explicit refresh and missing-file fallback.

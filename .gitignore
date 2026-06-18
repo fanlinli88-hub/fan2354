@@ -431,6 +431,8 @@ test-results/
 src/WowVmMonitor.App/bin/
 src/WowVmMonitor.App/obj/
 artifacts/
+!src/WowVmMonitor.Infrastructure/Logs/
+!src/WowVmMonitor.Infrastructure/Logs/*.cs
 
 # content below from: https://github.com/github/gitignore/blob/master/Global/macOS.gitignore
 # General
