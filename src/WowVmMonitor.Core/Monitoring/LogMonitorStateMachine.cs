@@ -9,6 +9,8 @@ public sealed class LogMonitorStateMachine
     private int _consecutiveNormals;
     private bool _isAlerting;
 
+    public bool IsAlerting => _isAlerting;
+
     public LogMonitorStateMachine(
         MonitorThresholds thresholds,
         int requiredAlertObservations,

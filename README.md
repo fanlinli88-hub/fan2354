@@ -28,3 +28,5 @@ The existing PowerShell monitor remains separate and unchanged.
 - Stateful two-observation alert and recovery transitions.
 - Shallow latest-log discovery across character and date directories.
 - Cached log selection with explicit refresh and missing-file fallback.
+- A cancellable single-VM monitor that combines log discovery with state transitions.
+- An asynchronous shared-log source that converts share failures into explicit results.
