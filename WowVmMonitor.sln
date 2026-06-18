@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A1244579-2094-436E-8D99-C566660EED8F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WowVmMonitor.Core", "src\WowVmMonitor.Core\WowVmMonitor.Core.csproj", "{DD2C9598-57E3-486C-9A22-406DE2028CF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WowVmMonitor.Infrastructure", "src\WowVmMonitor.Infrastructure\WowVmMonitor.Infrastructure.csproj", "{2EAE2732-138E-4BBF-AEFB-4DCAF49126F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WowVmMonitor.App", "src\WowVmMonitor.App\WowVmMonitor.App.csproj", "{500C9CAD-E020-4ED9-AE29-1372E6C41F28}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E80ACF75-72A2-4A5D-8336-D152689879EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WowVmMonitor.Tests", "tests\WowVmMonitor.Tests\WowVmMonitor.Tests.csproj", "{E9ED78B8-607B-4EA4-86FE-202273E18502}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DD2C9598-57E3-486C-9A22-406DE2028CF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD2C9598-57E3-486C-9A22-406DE2028CF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD2C9598-57E3-486C-9A22-406DE2028CF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD2C9598-57E3-486C-9A22-406DE2028CF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EAE2732-138E-4BBF-AEFB-4DCAF49126F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EAE2732-138E-4BBF-AEFB-4DCAF49126F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EAE2732-138E-4BBF-AEFB-4DCAF49126F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EAE2732-138E-4BBF-AEFB-4DCAF49126F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{500C9CAD-E020-4ED9-AE29-1372E6C41F28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{500C9CAD-E020-4ED9-AE29-1372E6C41F28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{500C9CAD-E020-4ED9-AE29-1372E6C41F28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{500C9CAD-E020-4ED9-AE29-1372E6C41F28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9ED78B8-607B-4EA4-86FE-202273E18502}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9ED78B8-607B-4EA4-86FE-202273E18502}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9ED78B8-607B-4EA4-86FE-202273E18502}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9ED78B8-607B-4EA4-86FE-202273E18502}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DD2C9598-57E3-486C-9A22-406DE2028CF2} = {A1244579-2094-436E-8D99-C566660EED8F}
+		{2EAE2732-138E-4BBF-AEFB-4DCAF49126F6} = {A1244579-2094-436E-8D99-C566660EED8F}
+		{500C9CAD-E020-4ED9-AE29-1372E6C41F28} = {A1244579-2094-436E-8D99-C566660EED8F}
+		{E9ED78B8-607B-4EA4-86FE-202273E18502} = {E80ACF75-72A2-4A5D-8336-D152689879EA}
+	EndGlobalSection
+EndGlobal
