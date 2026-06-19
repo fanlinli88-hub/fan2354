@@ -1,5 +1,6 @@
 using WowVmMonitor.App.History;
 using WowVmMonitor.App.Monitoring;
+using WowVmMonitor.App.Notifications;
 using WowVmMonitor.App.Presentation;
 using WowVmMonitor.App.Shares;
 using WowVmMonitor.Core.Configuration;
@@ -14,6 +15,7 @@ public sealed class MonitoringController : IMonitoringController
     private readonly ConfigurationStore _configurationStore;
     private readonly IShareConnectionCoordinator _shareConnections;
     private readonly InMemoryIncidentHistory _history;
+    private readonly INotificationDispatcher _notifications;
     private readonly SemaphoreSlim _lifecycle = new(1, 1);
     private IReadOnlyList<MonitoredVm> _machines = [];
     private IReadOnlyDictionary<string, string> _sharePaths = new Dictionary<string, string>();
@@ -23,11 +25,13 @@ public sealed class MonitoringController : IMonitoringController
     public MonitoringController(
         ConfigurationStore configurationStore,
         IShareConnectionCoordinator shareConnections,
-        InMemoryIncidentHistory history)
+        InMemoryIncidentHistory history,
+        INotificationDispatcher? notifications = null)
     {
         _configurationStore = configurationStore;
         _shareConnections = shareConnections;
         _history = history;
+        _notifications = notifications ?? new NullNotificationDispatcher();
     }
 
     public bool IsRunning => Volatile.Read(ref _isRunning) != 0;
@@ -37,6 +41,7 @@ public sealed class MonitoringController : IMonitoringController
     public async Task CheckOnceAsync(CancellationToken cancellationToken)
     {
         var configuration = await LoadConfigurationAsync(cancellationToken).ConfigureAwait(false);
+        _notifications.Configure(configuration.Ntfy);
         await ConnectSharesAsync(configuration, cancellationToken).ConfigureAwait(false);
         var machines = CreateMachines(configuration);
         var sharePaths = configuration.Machines.ToDictionary(machine => machine.Id, machine => machine.SharePath, StringComparer.OrdinalIgnoreCase);
@@ -61,6 +66,7 @@ public sealed class MonitoringController : IMonitoringController
             }
 
             var configuration = await LoadConfigurationAsync(cancellationToken).ConfigureAwait(false);
+            _notifications.Configure(configuration.Ntfy);
             await ConnectSharesAsync(configuration, cancellationToken).ConfigureAwait(false);
             _machines = CreateMachines(configuration);
             _sharePaths = configuration.Machines.ToDictionary(machine => machine.Id, machine => machine.SharePath, StringComparer.OrdinalIgnoreCase);
@@ -155,11 +161,18 @@ public sealed class MonitoringController : IMonitoringController
 
         if (value.Transition != MonitorTransition.None)
         {
+            var occurredAt = TimeProvider.System.GetUtcNow();
             _history.Append(new IncidentRecord(
-                TimeProvider.System.GetUtcNow(),
+                occurredAt,
                 result.MachineId,
                 MonitorStatusText.Format(value.Transition),
                 $"{result.DisplayName}：{MonitorStatusText.Format(value.Status)}"));
+
+            var notification = MonitorNotificationFactory.Create(result, occurredAt);
+            if (notification is not null)
+            {
+                _notifications.TryEnqueue(notification);
+            }
         }
     }
 
