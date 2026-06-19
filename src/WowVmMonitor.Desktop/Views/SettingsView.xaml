@@ -8,13 +8,13 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <WrapPanel Margin="0,0,0,10">
-            <TextBlock Text="Interval (s)" VerticalAlignment="Center" />
+            <TextBlock Text="检测间隔（秒）" VerticalAlignment="Center" />
             <TextBox Text="{Binding CheckIntervalSeconds}" Width="70" Margin="6,0,16,0" />
-            <TextBlock Text="Timeout (s)" VerticalAlignment="Center" />
+            <TextBlock Text="单次超时（秒）" VerticalAlignment="Center" />
             <TextBox Text="{Binding CheckTimeoutSeconds}" Width="70" Margin="6,0,16,0" />
-            <TextBlock Text="Warning (s)" VerticalAlignment="Center" />
+            <TextBlock Text="预警阈值（秒）" VerticalAlignment="Center" />
             <TextBox Text="{Binding WarningAfterSeconds}" Width="70" Margin="6,0,16,0" />
-            <TextBlock Text="Alert (s)" VerticalAlignment="Center" />
+            <TextBlock Text="异常阈值（秒）" VerticalAlignment="Center" />
             <TextBox Text="{Binding AlertAfterSeconds}" Width="70" Margin="6,0,0,0" />
         </WrapPanel>
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
@@ -33,17 +33,17 @@
                             <CheckBox IsChecked="{Binding Enabled}" VerticalAlignment="Center" />
                             <TextBox Grid.Column="1" Text="{Binding DisplayName}" Margin="4,0" />
                             <TextBox Grid.Column="2" Text="{Binding SharePath}" Margin="4,0" />
-                            <TextBox Grid.Column="3" Text="{Binding Username}" Margin="4,0" ToolTip="Username; blank password leaves credentials unchanged" />
-                            <PasswordBox Grid.Column="4" Margin="4,0" PasswordChanged="OnPasswordChanged" ToolTip="Blank keeps the existing password" />
-                            <Button Grid.Column="5" Content="Remove" Command="{Binding DataContext.RemoveMachineCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" Margin="4,0" />
+                            <TextBox Grid.Column="3" Text="{Binding Username}" Margin="4,0" ToolTip="共享账号；密码留空时保持原凭据不变" />
+                            <PasswordBox Grid.Column="4" Margin="4,0" PasswordChanged="OnPasswordChanged" ToolTip="输入新密码；留空表示不修改密码" />
+                            <Button Grid.Column="5" Content="删除" Command="{Binding DataContext.RemoveMachineCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" Margin="4,0" />
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,10,0,0">
-            <Button Content="Add Machine" Command="{Binding AddMachineCommand}" MinWidth="100" Margin="0,0,8,0" />
-            <Button Content="Save" Command="{Binding SaveCommand}" MinWidth="100" />
+            <Button Content="添加机器" Command="{Binding AddMachineCommand}" MinWidth="100" Margin="0,0,8,0" />
+            <Button Content="保存设置" Command="{Binding SaveCommand}" MinWidth="100" />
             <TextBlock Text="{Binding StatusMessage}" Margin="16,4,0,0" />
         </StackPanel>
     </Grid>

@@ -22,7 +22,7 @@ public sealed class IncidentHistoryViewModel : ObservableObject
 
     public ObservableCollection<IncidentRecordViewModel> Records { get; } = [];
     public AsyncCommand RefreshCommand { get; }
-    public string Notice => "History is kept in memory until WowVmMonitor exits.";
+    public string Notice => "异常历史仅保存在内存中，程序退出后将被清空。";
     public string? MachineFilter { get => _machineFilter; set => SetProperty(ref _machineFilter, value); }
     public string? EventTypeFilter { get => _eventTypeFilter; set => SetProperty(ref _eventTypeFilter, value); }
 

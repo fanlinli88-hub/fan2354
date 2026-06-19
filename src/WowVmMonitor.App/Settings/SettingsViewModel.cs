@@ -91,7 +91,7 @@ public sealed class SettingsViewModel : ObservableObject
         try
         {
             var result = await _service.SaveAsync(request, cancellationToken);
-            StatusMessage = result.Succeeded ? "Settings saved." : "Settings could not be saved.";
+            StatusMessage = result.Succeeded ? "设置已保存。" : "设置保存失败。";
             RequiresUserConfirmation = !result.Succeeded;
         }
         finally
@@ -114,7 +114,7 @@ public sealed class SettingsViewModel : ObservableObject
             .Select(number => $"machine-{number}")
             .First(candidate => Machines.All(machine => !machine.Id.Equals(candidate, StringComparison.OrdinalIgnoreCase)));
         Machines.Add(new MachineSettingsDraft(new MachineConfiguration(
-            id, $"Machine {Machines.Count + 1}", @"\\server\share", false,
+            id, $"机器 {Machines.Count + 1}", @"\\服务器\共享目录", false,
             MachineConfiguration.CredentialTargetFor(id))));
         AddMachineCommand.RaiseCanExecuteChanged();
     }
