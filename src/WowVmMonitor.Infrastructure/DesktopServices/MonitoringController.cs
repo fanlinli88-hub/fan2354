@@ -1,5 +1,6 @@
 using WowVmMonitor.App.History;
 using WowVmMonitor.App.Monitoring;
+using WowVmMonitor.App.Presentation;
 using WowVmMonitor.App.Shares;
 using WowVmMonitor.Core.Configuration;
 using WowVmMonitor.Core.Monitoring;
@@ -110,7 +111,7 @@ public sealed class MonitoringController : IMonitoringController
         {
             var machine = configuration.Machines.First(item => item.Id.Equals(result.MachineId, StringComparison.OrdinalIgnoreCase));
             MachineStatusChanged?.Invoke(new MachineStatusSnapshot(
-                machine.Id, machine.DisplayName, "Share unavailable", machine.SharePath,
+                machine.Id, machine.DisplayName, MonitorStatusText.Format(VmMonitorStatus.ShareUnavailable), machine.SharePath,
                 null, null, null, result.Code));
         }
     }
@@ -145,7 +146,7 @@ public sealed class MonitoringController : IMonitoringController
         MachineStatusChanged?.Invoke(new MachineStatusSnapshot(
             result.MachineId,
             result.DisplayName,
-            value.Status.ToString(),
+            MonitorStatusText.Format(value.Status),
             sharePath,
             value.Snapshot?.FullPath,
             value.Snapshot?.LastWriteTime,
@@ -157,8 +158,8 @@ public sealed class MonitoringController : IMonitoringController
             _history.Append(new IncidentRecord(
                 TimeProvider.System.GetUtcNow(),
                 result.MachineId,
-                value.Transition.ToString(),
-                $"{result.DisplayName}: {value.Status}"));
+                MonitorStatusText.Format(value.Transition),
+                $"{result.DisplayName}：{MonitorStatusText.Format(value.Status)}"));
         }
     }
 
