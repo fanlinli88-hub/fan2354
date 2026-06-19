@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\WowVmMonitor.Core\WowVmMonitor.Core.csproj" />
     <ProjectReference Include="..\..\src\WowVmMonitor.Infrastructure\WowVmMonitor.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\WowVmMonitor.App\WowVmMonitor.App.csproj" />
   </ItemGroup>
 
 </Project>

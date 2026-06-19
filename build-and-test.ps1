@@ -23,17 +23,39 @@ $resultsDirectory = Join-Path $PSScriptRoot "artifacts\TestResults"
 Remove-Item -LiteralPath $resultsDirectory -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path $resultsDirectory -Force | Out-Null
 
-& $dotnet test $solution --configuration $Configuration --no-build --logger "trx;LogFileName=tests.trx" --results-directory $resultsDirectory
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+$testProjects = Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot "tests") -Recurse -Filter "*.csproj"
+foreach ($project in $testProjects) {
+    $resultName = "$($project.BaseName).trx"
+    & $dotnet test $project.FullName --configuration $Configuration --no-build --logger "trx;LogFileName=$resultName" --results-directory $resultsDirectory
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-[xml]$testResults = Get-Content -LiteralPath (Join-Path $resultsDirectory "tests.trx") -Raw
-$counters = $testResults.TestRun.ResultSummary.Counters
-if ([int]$counters.executed -lt 1) {
+    $resultPath = Join-Path $resultsDirectory $resultName
+    if (-not (Test-Path -LiteralPath $resultPath)) {
+        throw "Test result was not created for $($project.BaseName)."
+    }
+    [xml]$projectResult = Get-Content -LiteralPath $resultPath -Raw
+    if ([int]$projectResult.TestRun.ResultSummary.Counters.executed -lt 1) {
+        throw "The test runner executed no tests for $($project.BaseName). Check Windows application-control events."
+    }
+}
+
+$executed = 0
+$passed = 0
+$failed = 0
+foreach ($resultFile in Get-ChildItem -LiteralPath $resultsDirectory -Filter "*.trx") {
+    [xml]$testResults = Get-Content -LiteralPath $resultFile.FullName -Raw
+    $counters = $testResults.TestRun.ResultSummary.Counters
+    $executed += [int]$counters.executed
+    $passed += [int]$counters.passed
+    $failed += [int]$counters.failed
+}
+
+if ($executed -lt 1) {
     throw "The test runner did not execute any tests. Check Windows application-control events."
 }
 
-if ([int]$counters.failed -gt 0) {
-    throw "$($counters.failed) automated test(s) failed."
+if ($failed -gt 0) {
+    throw "$failed automated test(s) failed."
 }
 
-Write-Host "Verified $($counters.passed) passing automated test(s)."
+Write-Host "Verified $passed passing automated test(s)."

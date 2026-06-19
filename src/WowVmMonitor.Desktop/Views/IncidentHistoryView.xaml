@@ -1,0 +1,25 @@
+<UserControl x:Class="WowVmMonitor.Desktop.Views.IncidentHistoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <TextBox Width="140" Text="{Binding MachineFilter}" ToolTip="按机器 ID 筛选" Margin="0,0,8,0" />
+            <TextBox Width="140" Text="{Binding EventTypeFilter}" ToolTip="按事件类型筛选" Margin="0,0,8,0" />
+            <Button Content="刷新记录" Command="{Binding RefreshCommand}" MinWidth="90" />
+        </StackPanel>
+        <TextBlock Grid.Row="1" Text="{Binding Notice}" Margin="0,8" Foreground="DarkGoldenrod" />
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Records}" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="时间" Binding="{Binding TimestampText}" Width="160" />
+                <DataGridTextColumn Header="机器" Binding="{Binding MachineId}" Width="120" />
+                <DataGridTextColumn Header="事件" Binding="{Binding EventType}" Width="120" />
+                <DataGridTextColumn Header="详情" Binding="{Binding Message}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>
