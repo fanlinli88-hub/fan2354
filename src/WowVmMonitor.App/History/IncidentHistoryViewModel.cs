@@ -20,7 +20,7 @@ public sealed class IncidentHistoryViewModel : ObservableObject
         RefreshCommand = new AsyncCommand(RefreshAsync);
     }
 
-    public ObservableCollection<IncidentRecord> Records { get; } = [];
+    public ObservableCollection<IncidentRecordViewModel> Records { get; } = [];
     public AsyncCommand RefreshCommand { get; }
     public string Notice => "History is kept in memory until WowVmMonitor exits.";
     public string? MachineFilter { get => _machineFilter; set => SetProperty(ref _machineFilter, value); }
@@ -36,7 +36,7 @@ public sealed class IncidentHistoryViewModel : ObservableObject
             Records.Clear();
             foreach (var record in records)
             {
-                Records.Add(record);
+                Records.Add(new IncidentRecordViewModel(record));
             }
         }, cancellationToken).ConfigureAwait(false);
     }

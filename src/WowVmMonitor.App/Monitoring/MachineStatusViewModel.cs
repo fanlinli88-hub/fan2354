@@ -1,4 +1,5 @@
 using WowVmMonitor.App.Mvvm;
+using WowVmMonitor.App.Presentation;
 
 namespace WowVmMonitor.App.Monitoring;
 
@@ -29,7 +30,18 @@ public sealed class MachineStatusViewModel : ObservableObject
     public string StatusText { get => _statusText; private set => SetProperty(ref _statusText, value); }
     public string SharePath { get => _sharePath; private set => SetProperty(ref _sharePath, value); }
     public string? LatestLogPath { get => _latestLogPath; private set => SetProperty(ref _latestLogPath, value); }
-    public DateTimeOffset? LastWriteTime { get => _lastWriteTime; private set => SetProperty(ref _lastWriteTime, value); }
+    public DateTimeOffset? LastWriteTime
+    {
+        get => _lastWriteTime;
+        private set
+        {
+            if (SetProperty(ref _lastWriteTime, value))
+            {
+                OnPropertyChanged(nameof(LastWriteTimeText));
+            }
+        }
+    }
+    public string LastWriteTimeText => LocalTimeText.Format(LastWriteTime);
     public TimeSpan? LogAge { get => _logAge; private set => SetProperty(ref _logAge, value); }
     public string? ErrorCode { get => _errorCode; private set => SetProperty(ref _errorCode, value); }
 

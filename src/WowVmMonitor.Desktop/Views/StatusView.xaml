@@ -10,7 +10,7 @@
             <Button Content="Start" Command="{Binding StartCommand}" MinWidth="90" Margin="0,0,8,0" />
             <Button Content="Stop" Command="{Binding StopCommand}" MinWidth="90" Margin="0,0,8,0" />
             <Button Content="Check Once" Command="{Binding CheckOnceCommand}" MinWidth="100" />
-            <TextBlock Margin="24,4,0,0" Text="{Binding LastCompletedCheck, StringFormat=Last check: {0:G}}" />
+            <TextBlock Margin="24,4,0,0" Text="{Binding LastCompletedCheckText, StringFormat=Last check: {0}}" />
         </StackPanel>
         <DataGrid Grid.Row="1" ItemsSource="{Binding Machines}" AutoGenerateColumns="False"
                   IsReadOnly="True" EnableRowVirtualization="True" EnableColumnVirtualization="True">
@@ -19,7 +19,7 @@
                 <DataGridTextColumn Header="Status" Binding="{Binding StatusText}" Width="100" />
                 <DataGridTextColumn Header="Share" Binding="{Binding SharePath}" Width="220" />
                 <DataGridTextColumn Header="Latest Log" Binding="{Binding LatestLogPath}" Width="*" />
-                <DataGridTextColumn Header="Modified" Binding="{Binding LastWriteTime, StringFormat={}{0:G}}" Width="150" />
+                <DataGridTextColumn Header="Modified" Binding="{Binding LastWriteTimeText}" Width="150" />
                 <DataGridTextColumn Header="Age" Binding="{Binding LogAge}" Width="100" />
                 <DataGridTextColumn Header="Error" Binding="{Binding ErrorCode}" Width="140" />
             </DataGrid.Columns>

@@ -15,7 +15,7 @@
         <TextBlock Grid.Row="1" Text="{Binding Notice}" Margin="0,8" Foreground="DarkGoldenrod" />
         <DataGrid Grid.Row="2" ItemsSource="{Binding Records}" AutoGenerateColumns="False" IsReadOnly="True">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Time" Binding="{Binding Timestamp, StringFormat={}{0:G}}" Width="160" />
+                <DataGridTextColumn Header="Time" Binding="{Binding TimestampText}" Width="160" />
                 <DataGridTextColumn Header="Machine" Binding="{Binding MachineId}" Width="120" />
                 <DataGridTextColumn Header="Event" Binding="{Binding EventType}" Width="120" />
                 <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*" />

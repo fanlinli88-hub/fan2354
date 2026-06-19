@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using WowVmMonitor.App.Mvvm;
+using WowVmMonitor.App.Presentation;
 using WowVmMonitor.App.Ui;
 
 namespace WowVmMonitor.App.Monitoring;
@@ -50,8 +51,16 @@ public sealed class MonitoringDashboardViewModel : ObservableObject, IAsyncDispo
     public DateTimeOffset? LastCompletedCheck
     {
         get => _lastCompletedCheck;
-        private set => SetProperty(ref _lastCompletedCheck, value);
+        private set
+        {
+            if (SetProperty(ref _lastCompletedCheck, value))
+            {
+                OnPropertyChanged(nameof(LastCompletedCheckText));
+            }
+        }
     }
+
+    public string LastCompletedCheckText => LocalTimeText.Format(LastCompletedCheck);
 
     public Task FlushStatusUpdatesAsync(CancellationToken cancellationToken = default) =>
         _statusPump.FlushAsync(cancellationToken);
