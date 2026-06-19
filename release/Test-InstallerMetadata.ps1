@@ -17,6 +17,7 @@ $requiredPatterns = @(
     'RestartApplications=no',
     'SignedUninstaller=yes',
     'SignTool=local',
+    'VersionInfoVersion=\{#MyAppVersion\}\.0',
     'Name: "desktopicon"',
     '\{autoprograms\}',
     'Languages\\ChineseSimplified\.isl'

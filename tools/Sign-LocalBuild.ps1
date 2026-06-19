@@ -10,7 +10,7 @@ $outputPattern = "\\bin\\$([regex]::Escape($Configuration))\\net8\.0(?:-windows)
 $files = Get-ChildItem -LiteralPath $repositoryRoot -Recurse -File |
     Where-Object {
         $_.FullName -match $outputPattern -and
-        $_.Name -match '^WowVmMonitor\..*\.(dll|exe)$'
+        $_.Name -match '^WowVmMonitor(?:\..*)?\.(dll|exe)$'
     }
 
 if (-not $files) {

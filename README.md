@@ -61,3 +61,21 @@ The existing PowerShell monitor remains separate and unchanged.
 - Incident history is currently bounded in memory and is cleared when the application exits; persistent history is intentionally deferred.
 - The desktop interface and tray menu use Simplified Chinese.
 - Displayed timestamps use the current Windows local time zone. Monitoring calculations retain UTC values internally.
+
+## Windows release package
+
+Build a signed x64 release on this computer with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\release\Build-Release.ps1 -Version 1.0.0
+```
+
+The command runs all tests and creates these files under `artifacts\release\1.0.0`:
+
+- `WowVmMonitor.exe`: self-contained single-file application; .NET is not required on the target system.
+- `WowVmMonitor-Setup-1.0.0.exe`: per-user installer with Start Menu and optional desktop shortcuts.
+- `SHA256SUMS.txt`: SHA-256 checksums for both executables.
+
+The installer uses `%LocalAppData%\Programs\WowVmMonitor`, requires no administrator rights, and registers a standard uninstaller. Run a newer setup executable to upgrade in place. Upgrades and uninstall preserve `%LocalAppData%\WowVmMonitor` configuration and Windows Credential Manager entries.
+
+Both executables and the generated uninstaller use the local `CN=WowVmMonitor Local Development` certificate. That certificate is intended only for this computer and is not a public distribution signature.
