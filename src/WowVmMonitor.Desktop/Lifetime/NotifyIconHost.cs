@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Windows.Forms;
+using WowVmMonitor.Desktop.Presentation;
 
 namespace WowVmMonitor.Desktop.Lifetime;
 
@@ -15,10 +16,10 @@ public sealed class NotifyIconHost : ITrayIconHost
         Func<Task> exit)
     {
         var menu = new ContextMenuStrip();
-        var openItem = menu.Items.Add("Open", null, (_, _) => open());
-        var startItem = menu.Items.Add("Start Monitoring", null, (_, _) => start());
-        var stopItem = menu.Items.Add("Stop Monitoring", null, (_, _) => stop());
-        var exitItem = menu.Items.Add("Exit", null, (_, _) => _ = RunExitAsync(exit));
+        var openItem = menu.Items.Add(DesktopPresentationText.Open, null, (_, _) => open());
+        var startItem = menu.Items.Add(DesktopPresentationText.StartMonitoring, null, (_, _) => start());
+        var stopItem = menu.Items.Add(DesktopPresentationText.StopMonitoring, null, (_, _) => stop());
+        var exitItem = menu.Items.Add(DesktopPresentationText.Exit, null, (_, _) => _ = RunExitAsync(exit));
         _commands = [openItem, startItem, stopItem, exitItem];
         _icon = new NotifyIcon
         {

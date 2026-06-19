@@ -17,8 +17,8 @@ public partial class App : System.Windows.Application
         catch (Exception exception)
         {
             System.Windows.MessageBox.Show(
-                $"WowVmMonitor could not start: {exception.Message}",
-                "WowVmMonitor",
+                Presentation.DesktopPresentationText.StartupError(exception.Message),
+                Presentation.DesktopPresentationText.StartupErrorTitle,
                 System.Windows.MessageBoxButton.OK,
                 System.Windows.MessageBoxImage.Error);
             Shutdown(1);

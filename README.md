@@ -59,3 +59,5 @@ The existing PowerShell monitor remains separate and unchanged.
 - Start, stop, and one-time checks execute asynchronously. File and network work stays outside the UI thread.
 - Minimizing or closing the window keeps monitoring in the tray. Use the tray Exit command to stop all monitors and quit.
 - Incident history is currently bounded in memory and is cleared when the application exits; persistent history is intentionally deferred.
+- The desktop interface and tray menu use Simplified Chinese.
+- Displayed timestamps use the current Windows local time zone. Monitoring calculations retain UTC values internally.

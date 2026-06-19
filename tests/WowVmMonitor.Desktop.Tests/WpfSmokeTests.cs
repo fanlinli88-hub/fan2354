@@ -1,4 +1,5 @@
 using WowVmMonitor.Desktop;
+using WowVmMonitor.Desktop.Presentation;
 
 namespace WowVmMonitor.Desktop.Tests;
 
@@ -59,6 +60,16 @@ public sealed class WpfSmokeTests
         Assert.Contains("机器", labels);
         Assert.Contains("状态", labels);
         Assert.Contains("日志时间", labels);
+    }
+
+    [Fact]
+    public void TrayAndStartupMessagesUseChineseText()
+    {
+        Assert.Equal("打开主窗口", DesktopPresentationText.Open);
+        Assert.Equal("开始监控", DesktopPresentationText.StartMonitoring);
+        Assert.Equal("停止监控", DesktopPresentationText.StopMonitoring);
+        Assert.Equal("退出程序", DesktopPresentationText.Exit);
+        Assert.Equal("WowVmMonitor 启动失败", DesktopPresentationText.StartupErrorTitle);
     }
 
     private static IEnumerable<string> CollectLabels(System.Windows.DependencyObject root)
