@@ -51,6 +51,20 @@ public sealed class NtfyClientTests
         Assert.Equal(2, handler.RequestCount);
     }
 
+    [Fact]
+    public async Task TimeoutCancelsUnderlyingHttpRequest()
+    {
+        var handler = new HangingHandler();
+        using var httpClient = new HttpClient(handler);
+        var client = new NtfyClient(httpClient, TimeSpan.FromMilliseconds(20), TimeSpan.Zero);
+
+        var result = await client.SendTestAsync("wow-vm-85898-fan2354", CancellationToken.None);
+
+        Assert.False(result.Succeeded);
+        Assert.Equal("ntfy.timeout", result.FailureCode);
+        Assert.True(handler.CancellationObserved);
+    }
+
     private sealed class RecordingHandler(params HttpStatusCode[] statuses) : HttpMessageHandler
     {
         private readonly Queue<HttpStatusCode> _statuses = new(statuses);
@@ -68,6 +82,27 @@ public sealed class NtfyClientTests
                 ? string.Empty
                 : await request.Content.ReadAsStringAsync(cancellationToken);
             return new HttpResponseMessage(_statuses.Dequeue());
+        }
+    }
+
+    private sealed class HangingHandler : HttpMessageHandler
+    {
+        public bool CancellationObserved { get; private set; }
+
+        protected override async Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
+                throw new InvalidOperationException("Unreachable.");
+            }
+            catch (OperationCanceledException)
+            {
+                CancellationObserved = true;
+                throw;
+            }
         }
     }
 }

@@ -49,7 +49,7 @@ public sealed class ShareConnectionCoordinatorTests
 
     private static MonitorConfiguration CreateEightMachineConfiguration() =>
         new(
-            1,
+            MonitorConfiguration.CurrentSchemaVersion,
             new MonitoringConfiguration(60, 10, 300, 600),
             Enumerable.Range(1, 8)
                 .Select(number => new MachineConfiguration(

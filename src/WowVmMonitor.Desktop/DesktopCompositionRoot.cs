@@ -7,6 +7,7 @@ using WowVmMonitor.Desktop.Ui;
 using WowVmMonitor.Infrastructure.Configuration;
 using WowVmMonitor.Infrastructure.Credentials;
 using WowVmMonitor.Infrastructure.DesktopServices;
+using WowVmMonitor.Infrastructure.Notifications;
 using WowVmMonitor.Infrastructure.Shares;
 
 namespace WowVmMonitor.Desktop;
@@ -14,6 +15,8 @@ namespace WowVmMonitor.Desktop;
 internal sealed class DesktopCompositionRoot(System.Windows.Application application)
 {
     private MonitoringDashboardViewModel? _dashboard;
+    private NtfyNotificationDispatcher? _notificationDispatcher;
+    private System.Net.Http.HttpClient? _httpClient;
 
     public async Task<MainWindow> CreateAsync(CancellationToken cancellationToken)
     {
@@ -23,11 +26,14 @@ internal sealed class DesktopCompositionRoot(System.Windows.Application applicat
         var configurationStore = new ConfigurationStore(dataDirectory);
         var credentialStore = new WindowsCredentialStore(new WindowsCredentialNativeApi());
         var settingsService = new DesktopSettingsService(configurationStore, credentialStore);
-        var settings = await SettingsViewModel.CreateAsync(settingsService, cancellationToken);
+        _httpClient = new System.Net.Http.HttpClient();
+        var ntfyClient = new NtfyClient(_httpClient, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(1));
+        _notificationDispatcher = new NtfyNotificationDispatcher(ntfyClient);
+        var settings = await SettingsViewModel.CreateAsync(settingsService, cancellationToken, ntfyClient);
         var dispatcher = new WpfUiDispatcher(application.Dispatcher);
         var history = new InMemoryIncidentHistory(1_000);
         var shareConnections = new ShareConnectionCoordinator(credentialStore, new WindowsNetworkApi());
-        var monitoring = new MonitoringController(configurationStore, shareConnections, history);
+        var monitoring = new MonitoringController(configurationStore, shareConnections, history, _notificationDispatcher);
         _dashboard = new MonitoringDashboardViewModel(monitoring, dispatcher, settings.RequiresUserConfirmation);
         settings.PropertyChanged += (_, args) =>
         {
@@ -52,7 +58,8 @@ internal sealed class DesktopCompositionRoot(System.Windows.Application applicat
             new WpfMainWindowHost(window),
             tray,
             new WpfApplicationShutdown(application),
-            monitoring);
+            monitoring,
+            _notificationDispatcher);
         window.LifetimeController = lifetime;
         return window;
     }
@@ -63,6 +70,11 @@ internal sealed class DesktopCompositionRoot(System.Windows.Application applicat
         {
             await _dashboard.DisposeAsync();
         }
+        if (_notificationDispatcher is not null)
+        {
+            await _notificationDispatcher.DisposeAsync();
+        }
+        _httpClient?.Dispose();
     }
 
     private static void Execute(System.Windows.Input.ICommand command)

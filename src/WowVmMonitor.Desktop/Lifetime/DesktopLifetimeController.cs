@@ -8,18 +8,21 @@ public sealed class DesktopLifetimeController
     private readonly ITrayIconHost _tray;
     private readonly IApplicationShutdown _shutdown;
     private readonly IMonitoringController _monitoring;
+    private readonly IAsyncDisposable? _backgroundCleanup;
     private int _exitRequested;
 
     public DesktopLifetimeController(
         IMainWindowHost window,
         ITrayIconHost tray,
         IApplicationShutdown shutdown,
-        IMonitoringController monitoring)
+        IMonitoringController monitoring,
+        IAsyncDisposable? backgroundCleanup = null)
     {
         _window = window;
         _tray = tray;
         _shutdown = shutdown;
         _monitoring = monitoring;
+        _backgroundCleanup = backgroundCleanup;
     }
 
     public void OnMinimized() => _window.Hide();
@@ -65,6 +68,21 @@ public sealed class DesktopLifetimeController
         }
         finally
         {
+            if (_backgroundCleanup is not null)
+            {
+                try
+                {
+                    await _backgroundCleanup.DisposeAsync().AsTask()
+                        .WaitAsync(TimeSpan.FromSeconds(5), cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                }
+                catch (TimeoutException)
+                {
+                }
+            }
             _tray.Dispose();
             _shutdown.Shutdown();
         }

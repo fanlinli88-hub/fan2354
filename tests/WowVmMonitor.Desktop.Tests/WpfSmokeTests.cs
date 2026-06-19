@@ -60,6 +60,9 @@ public sealed class WpfSmokeTests
         Assert.Contains("机器", labels);
         Assert.Contains("状态", labels);
         Assert.Contains("日志时间", labels);
+        Assert.Contains("启用 ntfy", labels);
+        Assert.Contains("ntfy 主题", labels);
+        Assert.Contains("测试推送", labels);
     }
 
     [Fact]
@@ -90,6 +93,11 @@ public sealed class WpfSmokeTests
             {
                 yield return columnHeader;
             }
+        }
+
+        if (root is System.Windows.Controls.TextBlock { Text: { Length: > 0 } text })
+        {
+            yield return text;
         }
 
         foreach (var child in System.Windows.LogicalTreeHelper.GetChildren(root).OfType<System.Windows.DependencyObject>())

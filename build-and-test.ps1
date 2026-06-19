@@ -28,6 +28,15 @@ foreach ($project in $testProjects) {
     $resultName = "$($project.BaseName).trx"
     & $dotnet test $project.FullName --configuration $Configuration --no-build --logger "trx;LogFileName=$resultName" --results-directory $resultsDirectory
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+    $resultPath = Join-Path $resultsDirectory $resultName
+    if (-not (Test-Path -LiteralPath $resultPath)) {
+        throw "Test result was not created for $($project.BaseName)."
+    }
+    [xml]$projectResult = Get-Content -LiteralPath $resultPath -Raw
+    if ([int]$projectResult.TestRun.ResultSummary.Counters.executed -lt 1) {
+        throw "The test runner executed no tests for $($project.BaseName). Check Windows application-control events."
+    }
 }
 
 $executed = 0

@@ -65,9 +65,11 @@ public sealed class NtfyClient : INtfySender, INtfyTestService
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
+                using var attemptCancellation =
+                    CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                attemptCancellation.CancelAfter(_timeout);
                 using var response = await _httpClient
-                    .PostAsJsonAsync(ServerUri, payload, cancellationToken)
-                    .WaitAsync(_timeout, cancellationToken)
+                    .PostAsJsonAsync(ServerUri, payload, attemptCancellation.Token)
                     .ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
                 {
@@ -80,7 +82,7 @@ public sealed class NtfyClient : INtfySender, INtfyTestService
             {
                 throw;
             }
-            catch (TimeoutException)
+            catch (OperationCanceledException)
             {
                 result = NtfySendResult.Failure("ntfy.timeout");
             }

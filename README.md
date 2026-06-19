@@ -62,6 +62,16 @@ The existing PowerShell monitor remains separate and unchanged.
 - The desktop interface and tray menu use Simplified Chinese.
 - Displayed timestamps use the current Windows local time zone. Monitoring calculations retain UTC values internally.
 
+## ntfy notifications
+
+WowVmMonitor sends notifications through the public `https://ntfy.sh` service without an account or password. In Settings:
+
+1. Enter the topic, for example `wow-vm-85898-fan2354`.
+2. Click `测试推送` and confirm the message arrives on the Android ntfy client.
+3. Enable `启用 ntfy`, save settings, then stop and restart monitoring.
+
+Automatic delivery occurs only for confirmed alert and recovery transitions. A bounded background queue, one retry, and a 10-second request timeout keep ntfy failures isolated from all machine monitoring loops. Notifications do not include share credentials or full log paths.
+
 ## Windows release package
 
 Build a signed x64 release on this computer with:

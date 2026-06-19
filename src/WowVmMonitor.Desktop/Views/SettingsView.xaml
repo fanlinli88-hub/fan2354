@@ -16,6 +16,11 @@
             <TextBox Text="{Binding WarningAfterSeconds}" Width="70" Margin="6,0,16,0" />
             <TextBlock Text="异常阈值（秒）" VerticalAlignment="Center" />
             <TextBox Text="{Binding AlertAfterSeconds}" Width="70" Margin="6,0,0,0" />
+            <CheckBox Content="启用 ntfy" IsChecked="{Binding NtfyEnabled}" VerticalAlignment="Center" Margin="20,0,8,0" />
+            <TextBlock Text="ntfy 主题" VerticalAlignment="Center" />
+            <TextBox Text="{Binding NtfyTopic}" Width="220" Margin="6,0,8,0" />
+            <Button Content="测试推送" Command="{Binding TestNtfyCommand}" MinWidth="90" />
+            <TextBlock Text="{Binding NtfyTestStatus}" VerticalAlignment="Center" Margin="8,0,0,0" />
         </WrapPanel>
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <ItemsControl ItemsSource="{Binding Machines}">

@@ -26,7 +26,7 @@ public sealed class DesktopLifetimeControllerTests
 
         await fixture.Controller.ExitAsync(CancellationToken.None);
 
-        Assert.Equal(["stop", "tray.dispose", "shutdown"], fixture.Events);
+        Assert.Equal(["stop", "notifications.dispose", "tray.dispose", "shutdown"], fixture.Events);
         Assert.False(fixture.Controller.OnWindowClosing());
     }
 
@@ -56,7 +56,16 @@ public sealed class DesktopLifetimeControllerTests
             Monitoring = new RecordingMonitoring(Events);
             Tray = new RecordingTray(Events);
             Shutdown = new RecordingShutdown(Events);
-            Controller = new DesktopLifetimeController(Window, Tray, Shutdown, Monitoring);
+            Controller = new DesktopLifetimeController(Window, Tray, Shutdown, Monitoring, new RecordingCleanup(Events));
+        }
+    }
+
+    private sealed class RecordingCleanup(List<string> events) : IAsyncDisposable
+    {
+        public ValueTask DisposeAsync()
+        {
+            events.Add("notifications.dispose");
+            return ValueTask.CompletedTask;
         }
     }
 

@@ -13,7 +13,7 @@ public sealed class SecretLeakageTests
         const string username = "unique-user-security-test";
         const string password = "unique-password-security-test";
         var configuration = new MonitorConfiguration(
-            1,
+            MonitorConfiguration.CurrentSchemaVersion,
             new MonitoringConfiguration(60, 10, 300, 600),
             [new MachineConfiguration(
                 "vm-01",
