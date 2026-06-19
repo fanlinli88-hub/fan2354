@@ -490,3 +490,7 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Release automation source (generated packages remain under artifacts/).
+!/release/
+!/release/**
