@@ -5,6 +5,30 @@ namespace WowVmMonitor.Tests.Infrastructure;
 public sealed class ConfigurationMigratorTests
 {
     [Fact]
+    public void MigratesVersionOneToVersionTwoWithDefaultNtfy()
+    {
+        const string json = """
+            {
+              "schemaVersion": 1,
+              "monitoring": {
+                "checkIntervalSeconds": 60,
+                "checkTimeoutSeconds": 10,
+                "warningAfterSeconds": 300,
+                "alertAfterSeconds": 600
+              },
+              "machines": []
+            }
+            """;
+
+        var result = new ConfigurationMigrator().DeserializeAndMigrate(json);
+
+        Assert.True(result.WasMigrated);
+        Assert.Equal(2, result.Configuration.SchemaVersion);
+        Assert.False(result.Configuration.Ntfy.Enabled);
+        Assert.Equal("wow-vm-85898-fan2354", result.Configuration.Ntfy.Topic);
+    }
+
+    [Fact]
     public void MigratesUnversionedConfigurationToVersionOne()
     {
         const string json = """
@@ -19,7 +43,7 @@ public sealed class ConfigurationMigratorTests
         var result = new ConfigurationMigrator().DeserializeAndMigrate(json);
 
         Assert.True(result.WasMigrated);
-        Assert.Equal(1, result.Configuration.SchemaVersion);
+        Assert.Equal(2, result.Configuration.SchemaVersion);
         Assert.Equal("vm-one", result.Configuration.Machines[0].Id);
         Assert.Equal("WowVmMonitor/share/vm-one", result.Configuration.Machines[0].CredentialTarget);
     }

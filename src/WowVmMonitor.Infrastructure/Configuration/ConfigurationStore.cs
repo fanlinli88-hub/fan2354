@@ -44,8 +44,8 @@ public sealed class ConfigurationStore
                     primary.Configuration,
                     false,
                     [new ConfigurationMessage(
-                        "configuration.migrated.v0-v1",
-                        "Configuration was upgraded from version 0 to version 1.")]);
+                        $"configuration.migrated.v{primary.SourceVersion}-v{MonitorConfiguration.CurrentSchemaVersion}",
+                        $"Configuration was upgraded from version {primary.SourceVersion} to version {MonitorConfiguration.CurrentSchemaVersion}.")]);
             }
 
             return new ConfigurationLoadResult(primary.Configuration, false, []);

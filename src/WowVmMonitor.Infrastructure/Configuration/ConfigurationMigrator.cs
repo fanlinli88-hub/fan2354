@@ -46,8 +46,19 @@ public sealed class ConfigurationMigrator
                 return new ConfigurationMigrationResult(MigrateV0(json), true, 0);
             }
 
-            if (!versionElement.TryGetInt32(out var version) ||
-                version != MonitorConfiguration.CurrentSchemaVersion)
+            if (!versionElement.TryGetInt32(out var version))
+            {
+                throw new ConfigurationFormatException(
+                    "configuration.version.unsupported",
+                    "Configuration version is unsupported.");
+            }
+
+            if (version == 1)
+            {
+                return new ConfigurationMigrationResult(MigrateV1(json), true, 1);
+            }
+
+            if (version != MonitorConfiguration.CurrentSchemaVersion)
             {
                 throw new ConfigurationFormatException(
                     "configuration.version.unsupported",
@@ -89,7 +100,23 @@ public sealed class ConfigurationMigrator
                 legacy.CheckTimeoutSeconds > 0 ? legacy.CheckTimeoutSeconds : 10,
                 legacy.WarningAfterSeconds > 0 ? legacy.WarningAfterSeconds : 300,
                 legacy.AlertAfterSeconds > 0 ? legacy.AlertAfterSeconds : 600),
-            machines);
+            machines,
+            NtfyConfiguration.CreateDefault());
+        Validate(configuration);
+        return configuration;
+    }
+
+    private static MonitorConfiguration MigrateV1(string json)
+    {
+        var previous = JsonSerializer.Deserialize<VersionOneConfiguration>(json, JsonOptions)
+            ?? throw new ConfigurationFormatException(
+                "configuration.empty",
+                "Configuration could not be read.");
+        var configuration = new MonitorConfiguration(
+            MonitorConfiguration.CurrentSchemaVersion,
+            previous.Monitoring,
+            previous.Machines,
+            NtfyConfiguration.CreateDefault());
         Validate(configuration);
         return configuration;
     }
@@ -164,6 +191,13 @@ public sealed class ConfigurationMigrator
         public int AlertAfterSeconds { get; init; }
 
         public IReadOnlyList<LegacyMachine>? Machines { get; init; }
+    }
+
+    private sealed class VersionOneConfiguration
+    {
+        public required MonitoringConfiguration Monitoring { get; init; }
+
+        public required IReadOnlyList<MachineConfiguration> Machines { get; init; }
     }
 
     private sealed class LegacyMachine

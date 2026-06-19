@@ -19,7 +19,18 @@ public static class ConfigurationValidator
 
         ValidateMonitoring(configuration.Monitoring, errors);
         ValidateMachines(configuration.Machines, errors);
+        ValidateNtfy(configuration.Ntfy, errors);
         return errors;
+    }
+
+    private static void ValidateNtfy(
+        NtfyConfiguration? ntfy,
+        ICollection<ConfigurationValidationError> errors)
+    {
+        if (ntfy is null || !NtfyConfiguration.IsValidTopic(ntfy.Topic))
+        {
+            errors.Add(new("ntfy.topic.invalid", "ntfy topic must contain 1-64 letters, numbers, underscores, or hyphens."));
+        }
     }
 
     private static void ValidateMonitoring(

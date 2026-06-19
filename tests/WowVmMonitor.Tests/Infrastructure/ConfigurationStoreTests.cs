@@ -8,7 +8,7 @@ namespace WowVmMonitor.Tests.Infrastructure;
 public sealed class ConfigurationStoreTests
 {
     [Fact]
-    public void SavesAndLoadsVersionOneConfiguration()
+    public void SavesAndLoadsCurrentConfiguration()
     {
         using var fixture = new ConfigurationFixture();
 
@@ -24,7 +24,7 @@ public sealed class ConfigurationStoreTests
     {
         using var fixture = new ConfigurationFixture();
         fixture.WritePrimary("{broken");
-        fixture.WriteBackup(fixture.ValidV1Json("vm-backup"));
+        fixture.WriteBackup(fixture.ValidCurrentJson("vm-backup"));
 
         var result = fixture.Store.Load();
 
@@ -83,7 +83,7 @@ public sealed class ConfigurationStoreTests
 
         public MonitorConfiguration Configuration(string id) =>
             new(
-                1,
+                MonitorConfiguration.CurrentSchemaVersion,
                 new MonitoringConfiguration(60, 10, 300, 600),
                 [new MachineConfiguration(
                     id,
@@ -92,7 +92,7 @@ public sealed class ConfigurationStoreTests
                     true,
                     MachineConfiguration.CredentialTargetFor(id))]);
 
-        public string ValidV1Json(string id) => JsonSerializer.Serialize(Configuration(id), JsonOptions);
+        public string ValidCurrentJson(string id) => JsonSerializer.Serialize(Configuration(id), JsonOptions);
 
         public void WritePrimary(string content) =>
             File.WriteAllText(Path.Combine(Root, "config.json"), content, new UTF8Encoding(false));

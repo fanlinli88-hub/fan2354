@@ -61,6 +61,22 @@ public sealed class ConfigurationValidatorTests
             error => error.Code == "monitoring.thresholds.order");
     }
 
+    [Theory]
+    [InlineData("")]
+    [InlineData("contains space")]
+    [InlineData("contains/slash")]
+    public void RejectsInvalidNtfyTopic(string topic)
+    {
+        var configuration = CreateConfiguration(1) with
+        {
+            Ntfy = new NtfyConfiguration(true, topic)
+        };
+
+        Assert.Contains(
+            ConfigurationValidator.Validate(configuration),
+            error => error.Code == "ntfy.topic.invalid");
+    }
+
     private static MonitorConfiguration CreateConfiguration(int count) =>
         new(
             MonitorConfiguration.CurrentSchemaVersion,
