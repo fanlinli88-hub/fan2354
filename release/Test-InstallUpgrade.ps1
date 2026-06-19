@@ -73,6 +73,17 @@ try {
     }
 }
 finally {
+    if (Test-Path -LiteralPath $uninstallKey) {
+        try {
+            $cleanupUninstall = (Get-ItemProperty -LiteralPath $uninstallKey).UninstallString.Trim('"')
+            Start-Process -FilePath $cleanupUninstall -ArgumentList @(
+                "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART"
+            ) -Wait
+        }
+        catch {
+            Write-Warning "Test installation cleanup failed: $($_.Exception.Message)"
+        }
+    }
     Remove-Item -LiteralPath $sentinel -Force -ErrorAction SilentlyContinue
 }
 
