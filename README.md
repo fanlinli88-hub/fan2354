@@ -6,8 +6,10 @@ Professional C#/.NET implementation of the shared-log monitor.
 
 - `WowVmMonitor.Core`: domain rules and monitoring state.
 - `WowVmMonitor.Infrastructure`: file shares, notifications, credentials, and persistence.
-- `WowVmMonitor.App`: application entry point. No UI is implemented yet.
+- `WowVmMonitor.App`: MVVM application and asynchronous command layer.
+- `WowVmMonitor.Desktop`: WPF desktop and WinForms tray host.
 - `WowVmMonitor.Tests`: automated tests.
+- `WowVmMonitor.Desktop.Tests`: desktop lifecycle and WPF smoke tests.
 
 ## Build and test
 
@@ -32,6 +34,8 @@ The existing PowerShell monitor remains separate and unchanged.
 - An asynchronous shared-log source that converts share failures into explicit results.
 - Concurrent orchestration for up to eight independently cached and timed virtual machines.
 - A 10-second default per-machine check timeout with isolated start and stop control.
+- WPF status, settings, and in-memory incident-history views.
+- Tray operation with close/minimize-to-tray and explicit stop-before-exit behavior.
 
 ## Runtime limits
 
@@ -39,3 +43,49 @@ The existing PowerShell monitor remains separate and unchanged.
 - Default per-check timeout: 10 seconds per machine.
 - Maximum concurrent machines: 8.
 - Monitoring reads directory metadata only; log contents are never read.
+
+## Configuration and credentials
+
+- Configuration: `%LocalAppData%\WowVmMonitor\config.json`
+- Backup: `%LocalAppData%\WowVmMonitor\config.json.bak`
+- Credentials: Windows Credential Manager targets named `WowVmMonitor/share/<machine-id>`
+- Usernames and passwords are never stored in JSON or emitted in diagnostics.
+- A valid backup is restored automatically. If both files are invalid, monitoring remains disabled until the generated default is reviewed.
+- Starting WowVmMonitor after a Windows restart reloads saved credentials and reconnects enabled shares; the app does not register itself for automatic startup.
+
+## Desktop behavior
+
+- Add, remove, and edit up to eight machines from Settings; passwords are cleared from UI memory after each save attempt.
+- Start, stop, and one-time checks execute asynchronously. File and network work stays outside the UI thread.
+- Minimizing or closing the window keeps monitoring in the tray. Use the tray Exit command to stop all monitors and quit.
+- Incident history is currently bounded in memory and is cleared when the application exits; persistent history is intentionally deferred.
+- The desktop interface and tray menu use Simplified Chinese.
+- Displayed timestamps use the current Windows local time zone. Monitoring calculations retain UTC values internally.
+
+## ntfy notifications
+
+WowVmMonitor sends notifications through the public `https://ntfy.sh` service without an account or password. In Settings:
+
+1. Enter the topic, for example `wow-vm-85898-fan2354`.
+2. Click `测试推送` and confirm the message arrives on the Android ntfy client.
+3. Enable `启用 ntfy`, save settings, then stop and restart monitoring.
+
+Automatic delivery occurs only for confirmed alert and recovery transitions. A bounded background queue, one retry, and a 10-second request timeout keep ntfy failures isolated from all machine monitoring loops. Notifications do not include share credentials or full log paths.
+
+## Windows release package
+
+Build a signed x64 release on this computer with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\release\Build-Release.ps1 -Version 1.0.0
+```
+
+The command runs all tests and creates these files under `artifacts\release\1.0.0`:
+
+- `WowVmMonitor.exe`: self-contained single-file application; .NET is not required on the target system.
+- `WowVmMonitor-Setup-1.0.0.exe`: per-user installer with Start Menu and optional desktop shortcuts.
+- `SHA256SUMS.txt`: SHA-256 checksums for both executables.
+
+The installer uses `%LocalAppData%\Programs\WowVmMonitor`, requires no administrator rights, and registers a standard uninstaller. Run a newer setup executable to upgrade in place. Upgrades and uninstall preserve `%LocalAppData%\WowVmMonitor` configuration and Windows Credential Manager entries.
+
+Both executables and the generated uninstaller use the local `CN=WowVmMonitor Local Development` certificate. That certificate is intended only for this computer and is not a public distribution signature.

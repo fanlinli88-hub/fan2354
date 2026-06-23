@@ -1,0 +1,10 @@
+<Application x:Class="WowVmMonitor.Desktop.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             ShutdownMode="OnExplicitShutdown">
+    <Application.Resources>
+        <SolidColorBrush x:Key="NormalBrush" Color="#267A43" />
+        <SolidColorBrush x:Key="WarningBrush" Color="#A65F00" />
+        <SolidColorBrush x:Key="AlertBrush" Color="#B42318" />
+    </Application.Resources>
+</Application>
